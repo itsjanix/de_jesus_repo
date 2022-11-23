@@ -1,0 +1,94 @@
+---
+title: "Worksheet - 3b"
+author: "Angel Janica Marie De Jesus"
+date: "2022-11-11"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+##1. A.Write the codes.
+```{r, echo=TRUE}
+Respondents <- c(seq(1,20))
+Sex <- c(2,2,1,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,1,2)
+FathersOccupation <- c(1,3,3,3,1,2,3,1,1,1,3,2,1,3,3,1,3,1,2,1)
+PersonsAtHome <- c(5,7,3,8,5,9,6,7,8,4,7,5,4,7,8,8,3,11,7,6)
+SiblingsAtSchool <- c(6,4,4,1,2,1,5,3,1,2,3,2,5,5,2,1,2,5,3,2)
+TypesOfHouses <- c(1,2,3,1,1,3,3,1,2,3,2,3,2,2,3,3,3,3,3,2)
+
+df <- data.frame(Respondents, Sex, FathersOccupation, PersonsAtHome, SiblingsAtSchool, TypesOfHouses)
+
+print (df)
+names(df)
+```
+
+##B. Describe the data:
+##The data given are the respondents information according to sex, parent occupation, people at home, siblings at school and the type of houses.
+
+##Get the structure or the summary of the data
+```{r, echo=TRUE}
+summary(df)
+
+```
+##C. Is the mean number of siblings attending is 5?
+```{r, echo=TRUE}
+mean(SiblingsAtSchool)
+##No
+```
+
+
+##d. Extract the 1st two rows and then all the columns using the subsetting functions. Write the codes and its output.
+
+```{r, echo=TRUE}
+
+sbst1 <- df[c(1,2),c(1:6)]
+sbst1
+```
+
+##e. Extract 3rd and 5th row with 2nd and 4th column. Write the codes and its result.
+```{r, echo=TRUE}
+sbst2 <- df[c(3,5),c(2,4)]
+sbst2
+```
+
+##f. Select the variable types of houses then store the vector that results as types_houses. Write the codes.
+```{r, echo=TRUE}
+
+types_houses <- (df$'Types Of Houses')
+types_houses
+```
+##g. Select only all Males respondent that their father occupation was farmer. Write the codes and its output.
+
+```{r, echo=TRUE}
+
+Male <- subset(df,Sex == '1' & FathersOccupation == '1')
+Male
+
+MaleFarm <- Male[c(2:3)]
+MaleFarm
+```
+##h. Select only all females respondent that have greater than or equal to 5 number of siblings attending school. Write the codes and its outputs.
+
+```{r, echo=TRUE}
+
+Female <- subset(df,Sex == '2' & SiblingsAtSchool >= '5')
+Female
+
+FemaleSib <- Female[c(2,5)]
+FemaleSib
+```
+
+##2. Write a R program to create an empty data frame. Using the following codes:
+```{r, echo=TRUE}
+
+df = data.frame(Ints=integer(),
+                Doubles=double(), Characters=character(),
+                Logicals=logical(),
+                Factors=factor(),
+                stringsAsFactors=FALSE)
+print("Structure of the empty dataframe:")
+print(str(df))
+```
+##a. Describe the results : data frame has 5 variables which are the Ints,Doubles,Characters,Logical and Factors. But the result on the tables has no data available since there is no inputted data on each variable.
+
+##3.Interpret the graph: The graph is titled as Figure 1: Sentiments of Tweets per day - Donald trump. The x = Day of Date / Sentiments consisting of dates from July 14, 15, 17,18, 20, 21, 2020. The y = Count of Sheet1 from 0 to 4000. The graph used is a bar graph consisting of 3 sentiments(Negative, Neutral and Positive).A legend is placed at the upper right corner indicating specific colors of every sentiments such as Negative = Red, Neutral= yellow and positive = blue.
