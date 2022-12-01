@@ -1,0 +1,160 @@
+#Individual Project 1
+Instructions:
+  
+  #Extract from twitter using your developer's credentials. Choose any keyword you want. 
+  #Get 10000 observations "excluding retweets.
+  #Plot the time series from the date created. with legends. 
+  #Plot a graph (any graph you want)  based on the type of device - found in Source - that the user use. Include the legends.
+  #Create a wordcloud from the screenName
+  
+  
+  #install and load packages
+  install.packages('twitteR')
+install.packages("RCurl")
+install.packages("rtweet")
+install.packages("tidytex")
+install.packages("plotly")
+install.packages("RColorBrewer")
+install.packages("stringr")
+install.packages("magrittr")
+install.packages("tm")
+install.packages("wordcloud")
+install.packages("wordcloud2")
+
+
+library("twitteR")
+library("RCurl")
+library(tidytex)
+library(rtweet)
+library(ggplot2)
+library(RColorBrewer)
+library(tm)
+library(dplyr)
+library(wordcloud)
+library(wordcloud2)
+library(stringr)
+
+#install.packages("syuzhet") #for sentiment analysis
+install.packages("syuzhet")
+library(syuzhet)
+
+install.packages("rdfp")
+library("rdfp")
+library(magrittr)
+
+
+#declare tokens and keys
+
+CONSUMER_KEY <- "rNOC9AXlOmMwltDU6fxZGJvoc"
+CONSUMER_SECRET <- "LMC48sUCCPib785PAYb1pzwjDiWueoJZthbpdpxiYUh2gxa4on"
+ACCESS_TOKEN <- "1596020398365151234-Ttupby9xwEH2IPfF2aIs1SdiXHtPgo"
+ACCESS_SECRET <- "yBeaMXTih50GXUOhiZBF2o2xHNuqUA9w3cUCFS0Oqt0U6"
+
+#Connect to twitter app
+library(twitteR)
+setup_twitter_oauth(consumer_key = CONSUMER_KEY,
+                    consumer_secret = CONSUMER_SECRET,
+                    access_token = ACCESS_TOKEN,
+                    access_secret = ACCESS_SECRET)
+
+
+#extract 10k tweets exclude retweets #Netflix
+
+searchTwt <- searchTwitter("#Wednesday -filter:retweets",
+                           n = 10000,
+                           lang = "en",
+                           since = "2022-11-24",
+                           until = "2022-11-30",
+                           retryOnRateLimit = 120)
+
+#converet to dataframe
+library("dplyr")
+
+TwtDF <- twListToDF(searchTwt)
+class(TwtDF)
+names(TwtDF)
+View(TwtDF)[1:5]
+head(TwtDF$text)[1:5]
+
+save(TwtDF,file = "WedTwtDF.Rdata")
+
+#load dataset
+load(file = "WedTwtDF.Rdata")
+
+
+#subsetting using the dplyr(package)
+install.packages("dplyr")
+library(dplyr)
+tweetsDF <-TwtDF %>%
+  select(screenName,text,created,statusSource)
+
+
+#group the date created
+tweetsDF %>%
+  group_by(1) %>%
+  summarise(max(created), min = min(created))
+
+tweetsDF %>% pull(created) %>% min()
+
+tweetsDF %>% pull(created) %>% max()
+
+
+# creating histogram with legend
+library(ggplot2)
+ggplot(data = tweetsDF, aes(x = created)) +
+  geom_histogram(aes(fill = ..count..)) +
+  xlab("Date") + ylab("Number of tweets") + 
+  scale_fill_gradient(low = "blue", high = "red")
+theme(legend.position = "topleft")
+
+
+
+# creating a wordcloud
+library(dplyr)
+tweet_appScreen <- tweetsDF %>% 
+  select(screenName) %>%
+  group_by(screenName) %>%
+  summarize(count=n()) %>%
+  arrange(desc(count))
+
+
+
+#convert to Corpus
+library(tm)
+namesCorpus <- Corpus(VectorSource(tweetsDF$screenName))
+class(tweetsDF$screenName)
+
+class(VectorSource(tweetsDF$screenName))
+str(namesCorpus)
+
+class(namesCorpus)
+namesCorpus
+
+
+
+library(wordcloud)
+pal <- brewer.pal(8, "Dark2")
+pal <- pal[-(1:4)]
+set.seed(123)
+
+par(mar = c(0,0,0,0), mfrow = c(1,1))
+
+wordcloud(words = namesCorpus, scale=c(3,0.5),
+          max.words=500,
+          random.order=FALSE,
+          rot.per=0.5,
+          use.r.layout=TRUE,
+          colors=pal)
+
+set.seed(1234)
+
+wordcloud(words = tweet_appScreen$screenName,
+          freq = tweet_appScreen$count,min.freq = 1,
+          max.words=1000, random.order=FALSE, rot.per=0.35,
+          colors = brewer.pal(8,"Dark2"))
+
+library(wordcloud2)
+wordcloud2(data=tweet_appScreen, 
+           size=0.8, 
+           color='random-dark',
+           shape = 'pentagon')
